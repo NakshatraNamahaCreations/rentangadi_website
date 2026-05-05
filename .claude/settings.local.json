@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -r \"useState\\\\|useEffect\\\\|useContext\" /c/Users/Win10/rentangadi/src/components/*.jsx)"
+    ]
+  }
+}
