@@ -29,3 +29,10 @@ dist/
 build/
 .env
 *.log
+
+# Large binary assets (kept locally, not in git)
+public/brochure.pdf
+src/assets/images1/RA catalog 2026_17 Mar.pdf
+
+# Duplicate of src/assets/mobile-clicked/
+Mobile Clicked Images_/
