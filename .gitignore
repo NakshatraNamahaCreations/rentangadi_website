@@ -30,8 +30,9 @@ build/
 .env
 *.log
 
-# Large binary assets (kept locally, not in git)
+# Large binary assets (hosted on Cloudinary, not in git)
 public/brochure.pdf
+public/1.pdf
 src/assets/images1/RA catalog 2026_17 Mar.pdf
 
 # Duplicate of src/assets/mobile-clicked/
