@@ -325,7 +325,7 @@ export default function CartPage() {
       //   createdAt: response?.createdAt || new Date().toISOString(),
       // })
 
-      alert("Order placed successfully ✅")
+      alert("Enquiry created successfully ✅")
 
       clearCart()
 
