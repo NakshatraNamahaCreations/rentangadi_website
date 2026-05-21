@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
 import { useProductDetails } from '../context/ProductDetailsContext'
 import { useCart } from '../hooks/useCart'
+import { useAuth } from '../hooks/useAuth'
 import QuantitySelector from './QuantitySelector'
 import './ProductDetailsPage.css'
 
 export default function ProductDetailsPage() {
   const { product: ctxProduct, closeProductDetails } = useProductDetails()
   const { addToCart, setQty, getCartQty, cartCount, setShowCartPage } = useCart()
+  const { isLoggedIn } = useAuth()
  const [toastMessage, setToastMessage] = useState('')
   const [imgIdx, setImgIdx] = useState(0)
   const [selectedColor, setSelectedColor] = useState(null)
@@ -70,12 +72,20 @@ export default function ProductDetailsPage() {
     const active = el.children[imgIdx]
     if (!active) return
     const elRect = el.getBoundingClientRect()
-    const activeRect = active.getBoundingClientRect()
     const pad = 6
-    if (activeRect.left < elRect.left + pad) {
-      el.scrollBy({ left: activeRect.left - elRect.left - pad, behavior: 'smooth' })
-    } else if (activeRect.right > elRect.right - pad) {
-      el.scrollBy({ left: activeRect.right - elRect.right + pad, behavior: 'smooth' })
+
+    // Show one thumbnail on each side of the active one for preview context.
+    const lookbehind = el.children[imgIdx - 1] || active
+    const lookahead = el.children[imgIdx + 1] || active
+    const lookbehindRect = lookbehind.getBoundingClientRect()
+    const lookaheadRect = lookahead.getBoundingClientRect()
+
+    if (lookbehindRect.left < elRect.left + pad) {
+      // Previous thumb is off the left edge — scroll left to reveal it
+      el.scrollBy({ left: lookbehindRect.left - elRect.left - pad, behavior: 'smooth' })
+    } else if (lookaheadRect.right > elRect.right - pad) {
+      // Next thumb is off the right edge — scroll right to reveal it
+      el.scrollBy({ left: lookaheadRect.right - elRect.right + pad, behavior: 'smooth' })
     }
   }, [imgIdx, selectedColor])
 
@@ -183,9 +193,11 @@ export default function ProductDetailsPage() {
             </div>
           )}
 
-          <p className="product-details-price">
-            ₹ {product.price.toLocaleString('en-IN')}
-          </p>
+          {isLoggedIn && (
+            <p className="product-details-price">
+              ₹ {product.price.toLocaleString('en-IN')}
+            </p>
+          )}
 
 
           {/* SPECS */}

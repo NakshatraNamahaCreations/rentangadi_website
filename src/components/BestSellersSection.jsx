@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useState, useMemo, useRef } from 'react'
 import { useCart } from '../hooks/useCart'
+import { useAuth } from '../hooks/useAuth'
 import { useProductDetails } from '../context/ProductDetailsContext'
 import { getProducts } from '../api/productApi'
 import QuantitySelector from './QuantitySelector'
@@ -42,6 +43,7 @@ function BestSellersSection() {
   const [toastMessage, setToastMessage] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const { addToCart, setQty, getCartQty, productSearch, cart, setShowCartPage } = useCart()
+  const { isLoggedIn } = useAuth()
   const [selectedQty, setSelectedQty] = useState({})
   const qtyRef = useRef({})
   
@@ -284,9 +286,11 @@ function BestSellersSection() {
                 </div>
                 <div className="best-sellers-card-body">
                   <h3 className="best-sellers-card-title">{item.name}</h3>
-                  <span className="best-sellers-card-price">
-                    ₹ {item.price.toLocaleString('en-IN')}
-                  </span>
+                  {isLoggedIn && (
+                    <span className="best-sellers-card-price">
+                      ₹ {item.price.toLocaleString('en-IN')}
+                    </span>
+                  )}
                   <div
                     className="best-sellers-card-footer"
                     onClick={(e) => e.stopPropagation()}

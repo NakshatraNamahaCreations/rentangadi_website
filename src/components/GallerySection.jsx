@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { furnitureItems } from '../data/furnitureData'
 import { useCart } from '../hooks/useCart'
+import { useAuth } from '../hooks/useAuth'
 import QuantitySelector from './QuantitySelector'
 import './GallerySection.css'
 
@@ -86,6 +87,7 @@ function GallerySection() {
   const [lightboxImage, setLightboxImage] = useState(null)
   const [lightboxImgIdx, setLightboxImgIdx] = useState(0)
   const { addToCart, setQty, getCartQty } = useCart()
+  const { isLoggedIn } = useAuth()
 
   const tabs = useMemo(() => {
     const categories = new Set(furnitureItems.map((item) => item.category).filter((c) => c !== 'All'))
@@ -130,7 +132,9 @@ function GallerySection() {
                 <h3 className="product-card-title">{item.name}</h3>
                 <p className="product-card-dims">SIZE (LBH) - {item.dimensions}</p>
                 <div className="product-card-footer">
-                  <span className="product-card-price">₹ {item.price.toLocaleString('en-IN')}</span>
+                  {isLoggedIn && (
+                    <span className="product-card-price">₹ {item.price.toLocaleString('en-IN')}</span>
+                  )}
                   <QuantitySelector
                     qty={inCartQty || 1}
                     onSetQty={(v) => {
@@ -207,7 +211,9 @@ const currentImg = images[lightboxImgIdx]?.url || images[0]?.url
                 <h3 className="gallery-lightbox-title">{lightboxImage.name}</h3>
                 <p className="gallery-lightbox-description">{lightboxImage.description}</p>
                 <p className="gallery-lightbox-dims">SIZE (LBH) - {lightboxImage.dimensions}</p>
-                <p className="gallery-lightbox-price">₹ {lightboxImage.price.toLocaleString('en-IN')}</p>
+                {isLoggedIn && (
+                  <p className="gallery-lightbox-price">₹ {lightboxImage.price.toLocaleString('en-IN')}</p>
+                )}
                 <button
                   type="button"
                   className="product-add-btn gallery-lightbox-add"

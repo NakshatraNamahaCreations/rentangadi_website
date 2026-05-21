@@ -1,6 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useMemo } from 'react'
 import { useCategoryProducts } from '../context/CategoryProductsContext'
 import { useCart } from '../hooks/useCart'
+import { useAuth } from '../hooks/useAuth'
 import { useProductDetails } from '../context/ProductDetailsContext'
 import QuantitySelector from './QuantitySelector'
 import { ProductImageCarousel } from './GallerySection'
@@ -11,8 +12,32 @@ import './BestSellersSection.css'
 import './CategoryProductsPage.css'
 
 export default function CategoryProductsPage() {
-  const { view, closeProductsPage } = useCategoryProducts()
-  const { addToCart, setQty, getCartQty, cartCount, setShowCartPage } = useCart()
+  const { view, closeProductsPage, getReturnTarget, clearReturnTarget } = useCategoryProducts()
+  const { addToCart, setQty, getCartQty, cartCount, setShowCartPage, navigateTo } = useCart()
+
+  const handleBack = () => {
+    const targetSubKey = getReturnTarget && getReturnTarget()
+    closeProductsPage()
+    navigateTo('products')
+
+    if (!targetSubKey) return
+
+    const id = `category-card-${targetSubKey}`
+    let attempts = 0
+    const tryScroll = () => {
+      const el = document.getElementById(id)
+      if (el) {
+        el.scrollIntoView({ behavior: 'instant', block: 'center' })
+        if (clearReturnTarget) clearReturnTarget()
+        return
+      }
+      // CategorySection fetches subcategories async; retry briefly.
+      if (++attempts < 30) setTimeout(tryScroll, 80)
+    }
+    requestAnimationFrame(() => requestAnimationFrame(tryScroll))
+  }
+
+  const { isLoggedIn } = useAuth()
   const { openProductDetails, detailReturnScroll, consumeDetailReturnScroll } = useProductDetails()
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(false)
@@ -179,7 +204,7 @@ export default function CategoryProductsPage() {
         <button
           type="button"
           className="cart-back-btn"
-          onClick={closeProductsPage}
+          onClick={handleBack}
         >
           Back
         </button>
@@ -303,9 +328,11 @@ export default function CategoryProductsPage() {
 
                 <div className="best-sellers-card-body">
                   <h3 className="best-sellers-card-title">{item.name}</h3>
-                  <span className="best-sellers-card-price">
-                    ₹ {item.price.toLocaleString('en-IN')}
-                  </span>
+                  {isLoggedIn && (
+                    <span className="best-sellers-card-price">
+                      ₹ {item.price.toLocaleString('en-IN')}
+                    </span>
+                  )}
                   <div
                     className="best-sellers-card-footer"
                     onClick={(e) => e.stopPropagation()}

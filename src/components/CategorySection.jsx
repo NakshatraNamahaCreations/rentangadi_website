@@ -283,6 +283,7 @@ setProducts(mapped)
           return (
             <button
               key={item._id}
+              id={`category-card-${subKey}`}
               type="button"
               className="category-card"
               onClick={() =>

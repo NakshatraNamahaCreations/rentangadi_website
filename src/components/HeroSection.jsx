@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useCart } from '../hooks/useCart'
+import { useAuth } from '../hooks/useAuth'
 import { useProductDetails } from '../context/ProductDetailsContext'
 import { getProducts, mapProductFromApi } from '../api/productApi'
 import heroImg from '../assets/furniture1/img_banner.jfif'
@@ -10,6 +11,7 @@ function HeroSection() {
   const [allProducts, setAllProducts] = useState([])
   const [showDropdown, setShowDropdown] = useState(false)
   const { setProductSearch } = useCart()
+  const { isLoggedIn } = useAuth()
   const { openProductDetails } = useProductDetails()
   const wrapRef = useRef(null)
 
@@ -139,7 +141,9 @@ function HeroSection() {
                   />
                   <div className="hero-search-item-info">
                     <span className="hero-search-item-name">{p.name}</span>
-                    <span className="hero-search-item-price">₹ {p.price.toLocaleString('en-IN')}</span>
+                    {isLoggedIn && (
+                      <span className="hero-search-item-price">₹ {p.price.toLocaleString('en-IN')}</span>
+                    )}
                   </div>
                 </button>
               ))}
