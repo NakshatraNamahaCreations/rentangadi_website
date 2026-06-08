@@ -113,12 +113,13 @@ const mapped = prodData.map((item) => {
         }))
       : null
 
+  const mainColor = item.Color || null
   const images = backendImages
     ? [
-        { url: imgUrl, color: null },
+        { url: imgUrl, color: mainColor },
         ...backendImages.filter((img) => img.url !== imgUrl),
       ]
-    : [{ url: imgUrl, color: null }]
+    : [{ url: imgUrl, color: mainColor }]
 
   return {
     id: item._id,
@@ -132,6 +133,9 @@ const mapped = prodData.map((item) => {
     rawImages: item.images || [],
     productSubcategory: item.ProductSubcategory || "",
     productCategory: item.ProductCategory || "",
+    color: item.Color || "",
+    material: item.Material || "",
+    seater: item.seater || "",
     createdAt: item.createdAt,
   }
 })

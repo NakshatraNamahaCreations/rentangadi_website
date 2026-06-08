@@ -60,7 +60,7 @@ export function mapProductFromApi(item) {
     : []
 
   const finalImages = [
-    { url: imgUrl, color: null },
+    { url: imgUrl, color: clean(item.Color) },
     ...apiImages.filter(img => img.url !== imgUrl),
   ]
 
@@ -82,6 +82,7 @@ export function mapProductFromApi(item) {
     material: clean(item.Material),
     seater: clean(item.seater),
     dimensions: clean(item.ProductSize),
+    color: clean(item.Color),
 
     // STOCK
     productStock: item.ProductStock ?? null,

@@ -167,31 +167,44 @@ export default function ProductDetailsPage() {
 )}
 
           {/* COLOR SELECTOR */}
-          {[...new Set(images.map(img => img.color).filter(Boolean))].length > 0 && (
-            <div className="color-selector">
-              <p className="color-label">Available Colors:</p>
+          {(() => {
+            const imageColors = [...new Set(images.map(img => img.color).filter(Boolean))]
+            const displayColors = imageColors.length > 0
+              ? imageColors
+              : (product.color ? [product.color] : [])
 
-              <div className="color-options">
+            if (displayColors.length === 0) return null
 
-                <button
-                  className={`color-circle default ${selectedColor === null ? 'active' : ''}`}
-                  onClick={() => setSelectedColor(null)}
-                >
-                  ALL
-                </button>
+            return (
+              <div className="color-selector">
+                <p className="color-label">Available Colors:</p>
 
-                {[...new Set(images.map(img => img.color).filter(Boolean))].map(color => (
-                  <button
-                    key={color}
-                    className={`color-circle ${selectedColor === color ? 'active' : ''}`}
-                    style={{ backgroundColor: color.toLowerCase() }}
-                    onClick={() => setSelectedColor(color)}
-                  />
-                ))}
+                <div className="color-options">
 
+                  {imageColors.length > 0 && (
+                    <button
+                      className={`color-circle default ${selectedColor === null ? 'active' : ''}`}
+                      onClick={() => setSelectedColor(null)}
+                    >
+                      ALL
+                    </button>
+                  )}
+
+                  {displayColors.map(color => (
+                    <button
+                      key={color}
+                      className={`color-circle ${selectedColor === color ? 'active' : ''}`}
+                      style={{ backgroundColor: color.toLowerCase() }}
+                      onClick={() => imageColors.length > 0 && setSelectedColor(color)}
+                      title={color}
+                      aria-label={color}
+                    />
+                  ))}
+
+                </div>
               </div>
-            </div>
-          )}
+            )
+          })()}
 
           {isLoggedIn && (
             <p className="product-details-price">
@@ -224,11 +237,39 @@ export default function ProductDetailsPage() {
               <div className="product-details-spec-row">
                 <dt>Color</dt>
                 <dd>
-                  {[...new Set(
-                    (product.images || [])
-                      .map(img => img.color)
-                      .filter(Boolean)
-                  )].join(', ') || '—'}
+                  {(() => {
+                    const imageColors = [...new Set(
+                      (product.images || [])
+                        .map(img => img.color)
+                        .filter(Boolean)
+                    )]
+                    const colors = imageColors.length > 0
+                      ? imageColors
+                      : (product.color ? [product.color] : [])
+
+                    if (colors.length === 0) return '—'
+
+                    return (
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                        {colors.map((c) => (
+                          <span key={c} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                            <span
+                              aria-hidden
+                              style={{
+                                display: 'inline-block',
+                                width: 14,
+                                height: 14,
+                                borderRadius: '50%',
+                                backgroundColor: c.toLowerCase(),
+                                border: '1px solid #ccc',
+                              }}
+                            />
+                            {c}
+                          </span>
+                        ))}
+                      </span>
+                    )
+                  })()}
                 </dd>
               </div>
 

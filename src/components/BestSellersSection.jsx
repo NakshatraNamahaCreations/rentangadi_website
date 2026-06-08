@@ -106,17 +106,18 @@ function BestSellersSection() {
     })).filter(img => img.url)
   : null
 
+  const mainColor = item.Color || null
   const images = usePinkHectorGallery
   ? [
-      { url: imgUrl, color: null },
+      { url: imgUrl, color: mainColor },
       ...PINK_HECTOR_THREE_SEATER_GALLERY.map(url => ({ url, color: null })),
     ]
   : backendImages
   ? [
-      { url: imgUrl, color: null }, // main image first
+      { url: imgUrl, color: mainColor }, // main image first
       ...backendImages.filter(img => img.url !== imgUrl),
     ]
-  : [{ url: imgUrl, color: null }]
+  : [{ url: imgUrl, color: mainColor }]
 
     return {
       id: item._id,
