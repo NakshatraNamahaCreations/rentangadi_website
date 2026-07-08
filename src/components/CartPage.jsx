@@ -113,11 +113,12 @@ export default function CartPage() {
   const [formData, setFormData] = useState({
     companyName: '',
     executiveName: '',
+    eventDate: '',
     deliveryDate: '',
     dismantleDate: '',
     slot: '',
     venueAddress: '',
-  
+
     fullName: '',
     billingAddress: '',
     clientNo: '',
@@ -239,6 +240,17 @@ export default function CartPage() {
       return
     }
 
+    if (
+      formData.eventDate &&
+      formData.deliveryDate &&
+      formData.dismantleDate &&
+      (formData.eventDate < formData.deliveryDate ||
+        formData.eventDate > formData.dismantleDate)
+    ) {
+      alert('Event date must fall between the start date and end date.')
+      return
+    }
+
     setSubmitting(true)
 
     const { date, time } = now()
@@ -263,6 +275,7 @@ export default function CartPage() {
     // const deliveryDateDMY = formatDMY(formData.enquiryDate) || date
     const deliveryDateDMY = formatDMY(formData.deliveryDate) || date
     const dismantleDateDMY = formatDMY(formData.dismantleDate) || formatDMY(formData.endDate) || date
+    const eventDateDMY = formatDMY(formData.eventDate) || deliveryDateDMY
 
     const { subtotal: subBeforeGst, gstAmount, totalPayable } =
       getGstTotalsFromSubtotal(cartTotal)
@@ -274,6 +287,7 @@ export default function CartPage() {
   enquiryDate: deliveryDateDMY,
   enquiryTime: DELIVERY_SLOTS.find((s) => s.value === formData.slot)?.label || time,
 
+  eventDate: eventDateDMY,
   endDate: dismantleDateDMY,
 
   clientName: formData.fullName || formData.companyName,
@@ -423,10 +437,10 @@ const totalPayable = subtotal + gstAmount
             )}
           </div>
 
-          {/* Row: Delivery Date | Dismantle Date | Select Slot */}
+          {/* Row: Start Date | End Date | Event Date */}
           <div className="cart-form-row cart-form-row-three">
             <div className="cart-form-group">
-              <label>Delivery Date *</label>
+              <label>Start Date *</label>
               <input
                 type="date"
                 value={formData.deliveryDate}
@@ -441,24 +455,56 @@ const totalPayable = subtotal + gstAmount
                       prev.dismantleDate && prev.dismantleDate < next
                         ? ''
                         : prev.dismantleDate,
+                    // Clear event date if it now falls before delivery
+                    eventDate:
+                      prev.eventDate && prev.eventDate < next
+                        ? ''
+                        : prev.eventDate,
                   }))
                 }}
                 required
               />
             </div>
             <div className="cart-form-group">
-              <label>Dismantle Date *</label>
+              <label>End Date *</label>
               <input
                 type="date"
                 value={formData.dismantleDate}
                 min={formData.deliveryDate || new Date().toISOString().split('T')[0]}
                 disabled={!formData.deliveryDate}
+                onChange={(e) => {
+                  const next = e.target.value
+                  setFormData((prev) => ({
+                    ...prev,
+                    dismantleDate: next,
+                    // Clear event date if it now falls after end date
+                    eventDate:
+                      prev.eventDate && next && prev.eventDate > next
+                        ? ''
+                        : prev.eventDate,
+                  }))
+                }}
+                required
+              />
+            </div>
+            <div className="cart-form-group">
+              <label>Event Date *</label>
+              <input
+                type="date"
+                value={formData.eventDate}
+                min={formData.deliveryDate || new Date().toISOString().split('T')[0]}
+                max={formData.dismantleDate || undefined}
+                disabled={!formData.deliveryDate || !formData.dismantleDate}
                 onChange={(e) =>
-                  setFormData({ ...formData, dismantleDate: e.target.value })
+                  setFormData({ ...formData, eventDate: e.target.value })
                 }
                 required
               />
             </div>
+          </div>
+
+          {/* Row: Select Slot */}
+          <div className="cart-form-row cart-form-row-two">
             <div className={`cart-form-group cart-slot-dropdown-wrap${formTouched && !formData.slot ? ' slot-invalid' : ''}`} ref={slotDropdownRef}>
               <label>Select Slot *</label>
               <div className="cart-slot-dropdown">
