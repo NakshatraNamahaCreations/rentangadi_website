@@ -5,6 +5,20 @@ import { useAuth } from '../hooks/useAuth'
 import QuantitySelector from './QuantitySelector'
 import './ProductDetailsPage.css'
 
+// Override CSS colour keywords whose default rendering does not match
+// how the product team names them (e.g. CSS `gold` is #FFD700, a bright
+// yellow — designers usually mean metallic gold). Add more overrides
+// here as the palette grows; unmapped names fall through to the raw CSS
+// keyword unchanged.
+const COLOR_HEX_OVERRIDES = {
+  gold: '#D4AF37',
+}
+
+const resolveSwatchColor = (name) => {
+  const key = String(name || '').trim().toLowerCase()
+  return COLOR_HEX_OVERRIDES[key] || key
+}
+
 export default function ProductDetailsPage() {
   const { product: ctxProduct, closeProductDetails } = useProductDetails()
   const { addToCart, setQty, getCartQty, cartCount, setShowCartPage } = useCart()
@@ -194,7 +208,7 @@ export default function ProductDetailsPage() {
                     <button
                       key={color}
                       className={`color-circle ${selectedColor === color ? 'active' : ''}`}
-                      style={{ backgroundColor: color.toLowerCase() }}
+                      style={{ backgroundColor: resolveSwatchColor(color) }}
                       onClick={() => imageColors.length > 0 && setSelectedColor(color)}
                       title={color}
                       aria-label={color}
@@ -260,7 +274,7 @@ export default function ProductDetailsPage() {
                                 width: 14,
                                 height: 14,
                                 borderRadius: '50%',
-                                backgroundColor: c.toLowerCase(),
+                                backgroundColor: resolveSwatchColor(c),
                                 border: '1px solid #ccc',
                               }}
                             />
