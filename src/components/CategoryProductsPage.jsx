@@ -128,9 +128,9 @@ export default function CategoryProductsPage() {
         const all = await getProducts()
         if (cancelled) return
 
-        const categoryToSend = (view.categoryName || view.categoryId || '').toLowerCase()
+        const categoryToSend = (view.categoryName || view.categoryId || '').toLowerCase().trim()
         let raw = all.filter(
-          (p) => (p.ProductCategory || '').toLowerCase().includes(categoryToSend)
+          (p) => (p.ProductCategory || '').toLowerCase().trim() === categoryToSend
         )
 
         let mapped = raw
@@ -139,9 +139,9 @@ export default function CategoryProductsPage() {
           .filter(Boolean)
 
         if (view.subLabel && view.subKey !== 'all') {
-          const subMatch = view.subLabel.toLowerCase()
+          const subMatch = view.subLabel.toLowerCase().trim()
           mapped = mapped.filter(
-            (p) => (p.productSubcategory || '').toLowerCase().includes(subMatch)
+            (p) => (p.productSubcategory || '').toLowerCase().trim() === subMatch
           )
         }
         setProducts(mapped)
